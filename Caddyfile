@@ -1,0 +1,4 @@
+{$FILM_BOARD_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy board:8780
+}

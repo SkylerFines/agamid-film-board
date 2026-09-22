@@ -34,7 +34,7 @@ python server.py --host 0.0.0.0
 
 Give collaborators `http://YOUR-COMPUTER-LAN-IP:8780` and the access key. Allow port 8780 through the host firewall for private networks if needed. For access from other devices when developing in WSL, running the server directly on Windows is usually simpler than configuring WSL forwarding. The host computer must stay running. Network binding requires an access key at least 12 characters long; it protects both reads and writes. The browser remembers the key for that tab's session.
 
-For collaborators outside your local network, deploy this repo on an always-on host with persistent disk, place an HTTPS reverse proxy in front of the server, and set `FILM_BOARD_KEY`. Forward the original `Host` header so same-origin checks work. Keep the Python port private behind the proxy. Public deployment, a domain, and hosting are not configured by this repo. This is a small trusted-team app with one shared access key, not individual accounts or permission roles. Plain HTTP is intended only for a trusted local network; use HTTPS remotely.
+For collaborators outside your local network, see [DEPLOYMENT.md](DEPLOYMENT.md). The included Docker Compose setup provides a persistent database and HTTPS through Caddy once installed on a host with your domain. It has not been published yet. This is a small trusted-team app with one shared access key, not individual accounts or permission roles. Plain HTTP is intended only for a trusted local network; use HTTPS remotely.
 
 ## Working with the board
 

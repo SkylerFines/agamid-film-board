@@ -1,0 +1,30 @@
+services:
+  board:
+    build: .
+    restart: unless-stopped
+    environment:
+      FILM_BOARD_KEY: ${FILM_BOARD_KEY:?Set a private board key in .env}
+    volumes:
+      - board-data:/app/data
+    expose:
+      - "8780"
+    security_opt:
+      - no-new-privileges:true
+  https:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      FILM_BOARD_DOMAIN: ${FILM_BOARD_DOMAIN:?Set your public domain in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - board
+volumes:
+  board-data:
+  caddy-data:
+  caddy-config:
