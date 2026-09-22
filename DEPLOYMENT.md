@@ -1,6 +1,6 @@
-# Hosting Film Board for collaborators in different locations
+# Hosting Agamid Film Board for collaborators in different locations
 
-The app supports shared editing, but the local URL is only a preview. Internet access needs an always-on host, a public domain, and HTTPS. The included Docker Compose configuration runs Film Board behind Caddy, which handles HTTPS. This configuration has not yet been deployed to an internet host.
+The app supports shared editing, but the local URL is only a preview. Internet access needs an always-on host, a public domain, and HTTPS. The included Docker Compose configuration runs Agamid Film Board behind Caddy, which handles HTTPS. This configuration has not yet been deployed to an internet host.
 
 ## On a server with Docker Compose
 
@@ -17,7 +17,7 @@ The app supports shared editing, but the local URL is only a preview. Internet a
 4. Open `https://YOUR-DOMAIN`, enter the access key, and create a test video. Open the same URL on another device with the same key and confirm that edits appear.
 5. Share the HTTPS URL and access key privately with your collaborators. Everyone with the key can read, edit, and delete any video. Individual accounts and permissions are not part of this first version.
 
-Film Board runs as an unprivileged user. Its data stays in the `board-data` Docker volume across normal restarts and rebuilds. Caddy certificate data is also persisted. Keep one Film Board instance attached to this database; this setup is not for horizontal scaling.
+Agamid Film Board runs as an unprivileged user. Its data stays in the `board-data` Docker volume across normal restarts and rebuilds. Caddy certificate data is also persisted. Keep one Agamid Film Board instance attached to this database; this setup is not for horizontal scaling.
 
 ## Back up the hosted database
 

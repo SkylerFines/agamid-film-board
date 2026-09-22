@@ -1,4 +1,4 @@
-# Film Board
+# Agamid Film Board
 
 A shared dashboard for turning video ideas into finished productions. Built with Python's standard library, SQLite, and plain HTML/CSS/JavaScript. No npm install or paid service is needed to run it.
 

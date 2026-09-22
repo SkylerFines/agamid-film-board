@@ -1,4 +1,4 @@
-"""Film Board: a small, dependency-free shared production dashboard."""
+"""Agamid Film Board: a small, dependency-free shared production dashboard."""
 import argparse
 import hmac
 import json
@@ -203,7 +203,7 @@ if __name__ == '__main__':
     if args.host not in ['127.0.0.1', 'localhost', '::1'] and len(key) < 12:
         parser.error('For network sharing, set FILM_BOARD_KEY to an access key of at least 12 characters.')
     server = make_server(args.host, args.port, args.data, key)
-    print(f'Film Board is running at http://{args.host}:{server.server_port}', flush=True)
+    print(f'Agamid Film Board is running at http://{args.host}:{server.server_port}', flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

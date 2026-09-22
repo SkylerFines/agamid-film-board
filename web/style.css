@@ -4,3 +4,5 @@
 #export-mobile{display:none}@media(max-width:700px){#export-mobile{display:block;padding:5px 10px}}
 
 .brand>span{white-space:nowrap}.brand img{flex-shrink:0}.brand{font-size:22px;letter-spacing:-.8px}
+
+.brand-subtitle{display:block;font-size:12px;font-weight:500;letter-spacing:1.4px;line-height:1.5}.brand-wordmark{line-height:1.1}
