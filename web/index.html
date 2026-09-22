@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Film Board · Make something worth watching</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script></head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="Film Board home"><img src="/favicon.svg" alt=""><span>film board<span class="brand-dot">.</span></span></a>
+    <div class="workspace-label">YOUR WORKSPACE</div>
+    <button class="nav-item active" id="all-projects"><span>▦</span> All productions <span id="nav-count" class="count">0</span></button>
+    <button class="nav-item" id="upcoming"><span>◷</span> Upcoming shoots</button>
+    <button class="nav-item" id="completed"><span>✓</span> Completed</button>
+    <div class="sidebar-note"><div class="mini-clapper">▰ / ▰ / ▰</div><h3>Good films start<br>with an idea.</h3><p>Give yours a place to grow.</p></div>
+    <div class="sidebar-bottom"><span class="status-dot"></span><span id="connection">Connecting…</span><button id="export" title="Download a JSON backup" aria-label="Download a JSON backup">↓</button></div>
+  </aside>
+  <main>
+    <header class="topbar"><span>Workspace <span class="slash">/</span> <strong>Productions</strong></span><span class="top-note">FROM FIRST IDEA TO FINAL CUT</span></header>
+    <section class="page-heading"><div><p class="eyebrow">A LITTLE STRUCTURE. MORE CREATING.</p><h1>Your next great film<br>starts here<span class="lime">.</span></h1><p class="subtitle">The ideas, the details, the days on set. All together.</p></div><button class="primary" id="new-project"><span>+</span> New video</button></section>
+    <section class="metrics" aria-label="Production overview"><div><span>Total videos</span><strong id="total">0</strong><small>The whole picture</small></div><div><span>In production</span><strong id="production">0</strong><small>Making it happen</small></div><div><span>Upcoming shoots</span><strong id="shoots">0</strong><small>Next on the calendar</small></div><div><span>Completed</span><strong id="done">0</strong><small>Ready for the world <span class="lime">↗</span></small></div></section>
+    <section class="workspace">
+      <div class="section-heading"><h2 id="view-title">All productions <span id="result-count">0</span></h2><div class="view-switch" aria-label="View"><button id="board-view" class="selected" aria-pressed="true">▦ Board</button><button id="table-view" aria-pressed="false">☷ Table</button></div></div>
+      <div class="toolbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Find a video, a person, an idea…" aria-label="Search videos"></label><div class="filters"><button id="export-mobile" title="Download a JSON backup" aria-label="Download a JSON backup">↓</button><select id="stage-filter" aria-label="Filter by stage"><option value="">All stages</option></select><select id="priority-filter" aria-label="Filter by priority"><option value="">All priorities</option><option>High</option><option>Normal</option><option>Low</option></select><select id="sort" aria-label="Sort videos"><option value="updated">Recently updated</option><option value="date">Shoot date</option><option value="priority">Priority</option><option value="title">Title A–Z</option><option value="stage">Progress</option></select></div></div>
+      <div id="load-error" class="error" hidden></div>
+      <div id="content" aria-live="polite"></div>
+      <div class="board-footer"><span>Small ideas. Big possibilities.</span><span id="refresh-note">Changes save to your shared board.</span></div>
+    </section>
+  </main>
+  <dialog id="editor" aria-labelledby="editor-title">
+    <form id="project-form"><div class="dialog-heading"><div><p class="eyebrow">PRODUCTION DETAILS</p><h2 id="editor-title">New video</h2></div><button type="button" class="icon-button" id="close-editor" aria-label="Close editor">×</button></div>
+      <div class="editor-body"><label>Video title<input name="title" required maxlength="160" placeholder="What are we making?"></label><label>One-line pitch<textarea name="summary" rows="2" maxlength="400" placeholder="The idea in a sentence or two."></textarea></label>
+      <div class="form-grid"><label>Stage<select name="stage" id="editor-stage"></select></label><label>Priority<select name="priority"><option>Normal</option><option>High</option><option>Low</option></select></label><label>Owner / collaborators<input name="owner" maxlength="120" placeholder="Who's taking the lead?"></label><label>Shoot date<input type="date" name="shootDate"></label></div>
+      <label>Creative notes<textarea name="notes" rows="6" maxlength="30000" placeholder="Treatment, shot list, locations, gear, or anything the crew should know…"></textarea></label>
+      <section class="detail-section"><h3>Production checklist <span id="check-progress"></span></h3><div id="checklist-items"></div><div class="add-row"><input id="check-label" placeholder="Add a next step" aria-label="New checklist item" maxlength="500"><button type="button" id="add-check">+ Add</button></div></section>
+      <section class="detail-section"><h3>Links & references</h3><div id="link-items"></div><div class="link-inputs"><input id="link-label" placeholder="Label (optional)" aria-label="Reference label" maxlength="500"><input id="link-url" type="url" placeholder="https://…" aria-label="Reference URL"><button type="button" id="add-link">+ Add</button></div></section>
+      <section class="detail-section"><h3>Visual inspiration <span>Up to 12 images</span></h3><div id="image-items" class="image-grid"></div><label class="upload">↥ Upload reference images<input id="image-upload" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple><small>Images are resized for the board.</small></label><div class="add-row"><input id="image-url" type="url" placeholder="Or paste an image URL: https://…" aria-label="Image URL"><button type="button" id="add-image">+ Add</button></div></section>
+      <p id="editor-error" class="error" role="alert" hidden></p></div>
+      <div class="dialog-footer"><button type="button" id="delete-project" class="danger">Delete video</button><span class="save-hint">Save to share your changes</span><button type="submit" class="primary" id="save">Save video</button></div>
+    </form>
+  </dialog>
+  <dialog id="access-dialog" aria-labelledby="access-title"><form id="access-form"><h2 id="access-title">Open your shared board</h2><p>Enter the access key from the person hosting Film Board.</p><label>Access key<input id="access-key" type="password" required autocomplete="current-password"></label><p id="access-error" class="error" hidden></p><button class="primary">Open board</button></form></dialog>
+  <div id="toast" role="status" hidden></div>
+</body></html>

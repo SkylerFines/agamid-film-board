@@ -1,0 +1,130 @@
+const { test, expect } = require('@playwright/test');
+
+async function unlock(page) {
+  await page.goto('/');
+  await expect(page.locator('#access-dialog')).toBeVisible();
+  await page.getByLabel('Access key', { exact: true }).fill('browser-test-key');
+  await page.getByRole('button', { name: 'Open board', exact: true }).click();
+  await expect(page.locator('#access-dialog')).not.toBeVisible();
+}
+
+test('create, upload, reopen, sort, filter, export and delete a production', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await unlock(page);
+  await page.getByRole('button', { name: 'New video', exact: false }).click();
+  await page.getByLabel('Video title', { exact: true }).fill('Browser test production');
+  await page.getByLabel('One-line pitch').fill('A film about friends making things.');
+  await page.locator('#editor-stage').selectOption('Planning');
+  await page.getByLabel('Owner / collaborators').fill('The crew');
+  await page.getByLabel('Shoot date', { exact: true }).fill('2027-01-15');
+  await page.getByLabel('Creative notes').fill('Wide shot first. Then a close-up.');
+  await page.getByLabel('New checklist item').fill('Book the location');
+  await page.locator('#add-check').click();
+  await page.getByLabel('Book the location').check();
+  await page.getByLabel('Reference label', { exact: true }).fill('Treatment');
+  await page.getByLabel('Reference URL', { exact: true }).fill('https://example.com/treatment');
+  await page.locator('#add-link').click();
+  const fixture = await page.evaluate(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 100; canvas.height = 80;
+    const ctx = canvas.getContext('2d'); ctx.fillStyle = '#ddfa7d'; ctx.fillRect(0, 0, 100, 80);
+    return canvas.toDataURL('image/png').split(',')[1];
+  });
+  const png = Buffer.from(fixture, 'base64');
+  await page.locator('#image-upload').setInputFiles({ name: 'reference.png', mimeType: 'image/png', buffer: png });
+  await expect(page.locator('#image-items img')).toHaveCount(1);
+  await page.getByRole('button', { name: 'Save video', exact: true }).click();
+  await expect(page.locator('#editor')).not.toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Browser test production', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Open Browser test production', exact: true }).click();
+  await expect(page.getByLabel('Creative notes')).toHaveValue('Wide shot first. Then a close-up.');
+  await expect(page.getByLabel('Book the location')).toBeChecked();
+  await expect(page.getByRole('link', { name: 'Treatment' })).toHaveAttribute('href', 'https://example.com/treatment');
+  await expect(page.locator('#image-items img')).toHaveAttribute('src', /^data:image\/jpeg/);
+  await page.locator('#editor-stage').selectOption('Done');
+  await page.getByRole('button', { name: 'Save video', exact: true }).click();
+  await expect(page.locator('#editor')).not.toBeVisible();
+  await page.locator('#table-view').click();
+  await page.getByLabel('Sort videos').selectOption('title');
+  await page.getByLabel('Search videos').fill('Browser test');
+  await expect(page.locator('tbody tr')).toHaveCount(1);
+  await page.getByLabel('Filter by stage').selectOption('Idea');
+  await expect(page.getByText('No videos here yet.')).toBeVisible();
+  await page.getByLabel('Filter by stage').selectOption('Done');
+  await expect(page.locator('tbody tr')).toHaveCount(1);
+  const downloaded = page.waitForEvent('download');
+  await page.locator('#export').click();
+  expect((await downloaded).suggestedFilename()).toMatch(/^film-board-.*\.json$/);
+  await page.getByRole('button', { name: 'Browser test production', exact: true }).click();
+  page.once('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: 'Delete video', exact: true }).click();
+  await expect(page.locator('#editor')).not.toBeVisible();
+  await expect(page.getByRole('button', { name: 'Browser test production', exact: true })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('two browser sessions share changes and stale saves preserve unsaved notes', async ({ browser, page }) => {
+  await unlock(page);
+  await page.getByRole('button', { name: 'New video', exact: false }).click();
+  await page.getByLabel('Video title', { exact: true }).fill('Shared production');
+  await page.getByRole('button', { name: 'Save video', exact: true }).click();
+  await expect(page.locator('#editor')).not.toBeVisible();
+  const secondContext = await browser.newContext();
+  const second = await secondContext.newPage();
+  await second.goto('http://127.0.0.1:8782');
+  await second.getByLabel('Access key', { exact: true }).fill('browser-test-key');
+  await second.getByRole('button', { name: 'Open board', exact: true }).click();
+  await second.getByRole('button', { name: 'Open Shared production', exact: true }).click();
+  await page.getByRole('button', { name: 'Open Shared production', exact: true }).click();
+  await page.getByLabel('Creative notes').fill('First collaborator notes');
+  await page.getByRole('button', { name: 'Save video', exact: true }).click();
+  await expect(page.locator('#editor')).not.toBeVisible();
+  await second.getByLabel('Creative notes').fill('Second collaborator unsaved notes');
+  await second.getByRole('button', { name: 'Save video', exact: true }).click();
+  await expect(second.locator('#editor-error')).toContainText('Someone else changed this video');
+  await expect(second.getByLabel('Creative notes')).toHaveValue('Second collaborator unsaved notes');
+  second.once('dialog', dialog => dialog.accept());
+  await second.getByRole('button', { name: 'Close editor' }).click();
+  await second.getByRole('button', { name: 'Open Shared production', exact: true }).click();
+  await expect(second.getByLabel('Creative notes')).toHaveValue('First collaborator notes');
+  await second.getByRole('button', { name: 'Close editor' }).click();
+  await page.getByRole('button', { name: 'Open Shared production', exact: true }).click();
+  await page.getByLabel('Video title', { exact: true }).fill('Shared production updated');
+  await page.getByRole('button', { name: 'Save video', exact: true }).click();
+  await expect(second.getByRole('heading', { name: 'Shared production updated', exact: true })).toBeVisible({ timeout: 12000 });
+  await secondContext.close();
+});
+
+test('mobile layout, keyboard controls and HTML text are usable', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await unlock(page);
+  await page.getByRole('button', { name: 'New video', exact: false }).click();
+  await page.getByLabel('Video title', { exact: true }).fill('<img src=x onerror=alert(1)>');
+  await page.getByRole('button', { name: 'Save video', exact: true }).click();
+  await expect(page.locator('#editor')).not.toBeVisible();
+  await expect(page.getByRole('heading', { name: '<img src=x onerror=alert(1)>', exact: true })).toBeVisible();
+  expect(await page.locator('body').evaluate(el => el.scrollWidth <= window.innerWidth)).toBe(true);
+  await expect(page.locator('#export-mobile')).toBeVisible();
+  const card = page.getByRole('button', { name: 'Open <img src=x onerror=alert(1)>', exact: true });
+  await card.focus(); await page.keyboard.press('Enter');
+  await expect(page.locator('#editor')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#editor')).not.toBeVisible();
+  await page.screenshot({ path: 'test-results/mobile.png', fullPage: true });
+});
+
+test('example board and desktop layout', async ({ page, request }) => {
+  const headers = { Authorization: 'Bearer browser-test-key' };
+  const { projects } = await (await request.get('/api/projects', { headers })).json();
+  for (const p of projects) await request.delete('/api/projects/' + p.id, { headers, data: { revision: p.revision } });
+  await unlock(page);
+  await page.getByRole('button', { name: 'Try three example videos' }).click();
+  await expect(page.locator('.card')).toHaveCount(3);
+  await expect(page.locator('#total')).toHaveText('3');
+  await page.screenshot({ path: 'test-results/desktop.png', fullPage: true });
+  await page.locator('#table-view').click();
+  await page.getByLabel('Sort videos').selectOption('priority');
+  await expect(page.locator('tbody tr').first()).toContainText('One room, one conversation');
+});
