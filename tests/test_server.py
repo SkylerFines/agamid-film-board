@@ -112,6 +112,28 @@ class BoardTests(unittest.TestCase):
         self.assertEqual(self.request('POST', data={'title': 'x'}, headers={'Content-Type': 'text/plain'})[0], 415)
         self.assertEqual(self.request('POST', data={'title': 'x'}, headers={'Content-Length': str(17 * 1024 * 1024)})[0], 413)
 
+    def test_install_assets_are_public_but_board_stays_protected(self):
+        with urlopen(self.url + '/manifest.webmanifest') as response:
+            self.assertEqual(response.headers.get_content_type(), 'application/manifest+json')
+            manifest = json.load(response)
+        self.assertEqual(manifest['name'], 'Agamid Film Board')
+        self.assertEqual(manifest['start_url'], '/')
+        self.assertEqual(manifest['display'], 'standalone')
+        import struct
+        for icon in manifest['icons']:
+            with urlopen(self.url + icon['src']) as response:
+                self.assertEqual(response.headers.get_content_type(), 'image/png')
+                png = response.read()
+                self.assertEqual(png[:8], b'\x89PNG\r\n\x1a\n')
+                width, height = struct.unpack('>II', png[16:24])
+                self.assertEqual(icon['sizes'], f'{width}x{height}')
+        for path in ['/', '/sw.js', '/install.js', '/offline.html', '/apple-touch-icon.png']:
+            with urlopen(Request(self.url + path, method='HEAD')) as response:
+                self.assertEqual(response.status, 200)
+                self.assertGreater(int(response.headers['Content-Length']), 0)
+                self.assertEqual(response.read(), b'')
+        self.assertEqual(self.request(key='')[0], 401)
+
 
 if __name__ == '__main__':
     unittest.main()

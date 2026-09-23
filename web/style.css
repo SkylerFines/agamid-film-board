@@ -6,3 +6,5 @@
 .brand>span{white-space:nowrap}.brand img{flex-shrink:0}.brand{font-size:22px;letter-spacing:-.8px}
 
 .brand-subtitle{display:block;font-size:12px;font-weight:500;letter-spacing:1.4px;line-height:1.5}.brand-wordmark{line-height:1.1}
+
+.top-actions{display:flex;align-items:center;gap:18px}#install-app{font-size:11px;padding:8px 11px;color:var(--lime)}#install-help{max-width:480px;padding:25px}#install-help h2{font-size:21px}#install-help p{font-size:13px;line-height:1.65;color:#b9c5ae}#install-help #install-status:empty{display:none}#install-help .primary{margin-top:10px}@media(display-mode:standalone){#install-app{display:none}}

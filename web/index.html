@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Agamid Film Board · Make something worth watching</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Agamid Film Board · Make something worth watching</title><meta name="theme-color" content="#181c16"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Agamid Film"><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><script type="module" src="/install.js"></script><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script></head>
 <body>
   <aside class="sidebar">
     <a class="brand" href="/" aria-label="Agamid Film Board home"><img src="/favicon.svg" alt=""><span class="brand-wordmark">agamid<span class="brand-subtitle">film board<span class="brand-dot">.</span></span></span></a>
@@ -12,7 +12,7 @@
     <div class="sidebar-bottom"><span class="status-dot"></span><span id="connection">Connecting…</span><button id="export" title="Download a JSON backup" aria-label="Download a JSON backup">↓</button></div>
   </aside>
   <main>
-    <header class="topbar"><span>Workspace <span class="slash">/</span> <strong>Productions</strong></span><span class="top-note">FROM FIRST IDEA TO FINAL CUT</span></header>
+    <header class="topbar"><span>Workspace <span class="slash">/</span> <strong>Productions</strong></span><div class="top-actions"><button id="install-app" type="button">Install app</button><span class="top-note">FROM FIRST IDEA TO FINAL CUT</span></div></header>
     <section class="page-heading"><div><p class="eyebrow">A LITTLE STRUCTURE. MORE CREATING.</p><h1>Your next great film<br>starts here<span class="lime">.</span></h1><p class="subtitle">The ideas, the details, the days on set. All together.</p></div><button class="primary" id="new-project"><span>+</span> New video</button></section>
     <section class="metrics" aria-label="Production overview"><div><span>Total videos</span><strong id="total">0</strong><small>The whole picture</small></div><div><span>In production</span><strong id="production">0</strong><small>Making it happen</small></div><div><span>Upcoming shoots</span><strong id="shoots">0</strong><small>Next on the calendar</small></div><div><span>Completed</span><strong id="done">0</strong><small>Ready for the world <span class="lime">↗</span></small></div></section>
     <section class="workspace">
@@ -36,5 +36,6 @@
     </form>
   </dialog>
   <dialog id="access-dialog" aria-labelledby="access-title"><form id="access-form"><h2 id="access-title">Open your shared board</h2><p>Enter the access key from the person hosting Agamid Film Board.</p><label>Access key<input id="access-key" type="password" required autocomplete="current-password"></label><p id="access-error" class="error" hidden></p><button class="primary">Open board</button></form></dialog>
+  <dialog id="install-help" aria-labelledby="install-title"><form method="dialog"><h2 id="install-title">Install Agamid Film Board</h2><p id="install-status" role="status"></p><p><strong>Android / Samsung:</strong> Open this page in Chrome. Tap the browser menu, then <strong>Install and create shortcut → Install</strong> or <strong>Add to Home screen → Install</strong>. Confirm the installation.</p><p><strong>iPhone:</strong> Open this page in Safari, tap Share, then Add to Home Screen. Enable Open as Web App if shown, then tap Add.</p><p>After installing, look for <strong>Agamid Film</strong> in your phone’s apps. On Android, press and hold its icon to add it to your home screen.</p><p>Internet access and your board access key are still required.</p><button class="primary">Got it</button></form></dialog>
   <div id="toast" role="status" hidden></div>
 </body></html>

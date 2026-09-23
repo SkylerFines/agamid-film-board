@@ -90,7 +90,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.end_headers()
-        self.wfile.write(body)
+        if self.command != 'HEAD':
+            self.wfile.write(body)
 
     def authorized(self):
         key = self.server.board_key
@@ -112,21 +113,35 @@ class Handler(BaseHTTPRequestHandler):
                 rows = db.execute('SELECT body FROM projects').fetchall()
             self.respond(200, {'projects': [json.loads(row[0]) for row in rows]})
             return
-        files = {'/': ('index.html', 'text/html'), '/app.js': ('app.js', 'text/javascript'), '/style.css': ('style.css', 'text/css'), '/favicon.svg': ('favicon.svg', 'image/svg+xml')}
+        files = {
+            '/': ('index.html', 'text/html'), '/app.js': ('app.js', 'text/javascript'),
+            '/style.css': ('style.css', 'text/css'), '/favicon.svg': ('favicon.svg', 'image/svg+xml'),
+            '/manifest.webmanifest': ('manifest.webmanifest', 'application/manifest+json'),
+            '/install.js': ('install.js', 'text/javascript'), '/sw.js': ('sw.js', 'text/javascript'),
+            '/offline.html': ('offline.html', 'text/html'),
+            '/icon-192.png': ('icon-192.png', 'image/png'),
+            '/icon-512.png': ('icon-512.png', 'image/png'),
+            '/icon-maskable-512.png': ('icon-maskable-512.png', 'image/png'),
+            '/apple-touch-icon.png': ('apple-touch-icon.png', 'image/png'),
+        }
         if path not in files:
             self.respond(404, {'error': 'Not found.'})
             return
         filename, mime = files[path]
         body = (ROOT / 'web' / filename).read_bytes()
         self.send_response(200)
-        self.send_header('Content-Type', mime + '; charset=utf-8')
+        self.send_header('Content-Type', mime if mime == 'image/png' else mime + '; charset=utf-8')
         self.send_header('Content-Length', str(len(body)))
         self.send_header('Cache-Control', 'no-cache')
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('Referrer-Policy', 'no-referrer')
         self.send_header('Content-Security-Policy', "default-src 'self'; img-src 'self' data: https: http:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
         self.end_headers()
-        self.wfile.write(body)
+        if self.command != 'HEAD':
+            self.wfile.write(body)
+
+    def do_HEAD(self):
+        self.do_GET()
 
     def mutate(self, method):
         if not self.authorized():

@@ -38,6 +38,16 @@ For collaborators outside your local network, see [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## Working with the board
 
+### Install on a phone
+
+Open the HTTPS board URL in Chrome on Android and use **Install app** at the top of the board, or the browser menu's **Install** option. Confirm the browser's installation prompt. The launcher name is **Agamid Film**; Android users can find it in their apps and drag it onto their home screen. If the browser is not ready to show its install prompt, the button shows instructions instead. Chrome may require some interaction and time on the page before offering installation.
+
+On iPhone, open the board in Safari and choose **Share → Add to Home Screen**. Enable **Open as Web App** if offered.
+
+The installed app needs an internet connection and the board access key. It may ask for the key again in a new session. An offline launch shows reconnect instructions. Only that generic offline page is cached by the service worker; project data, images, and credentials are never stored in its cache.
+
+### Productions
+
 - Stages: Idea → Planning → Ready to shoot → Filming → Editing → Done. Change a video's stage in its detail panel.
 - Board and table views; search title, pitch, people, and notes.
 - Sort by recent updates, shoot date, priority, title, or stage. In board view, the selected sort applies within each stage. Use table view for sorting across the entire board.
